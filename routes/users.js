@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 const User = require('../models/User');
 
@@ -49,7 +50,10 @@ router.post('/', newUserValidations, async (req, res) => {
     user.password = await bcrypt.hash(password, salt);
 
     await user.save();
-    res.send('Creating New User');
+    // -----> create payload and distribute token
+    const payload = {
+      user: user.id,
+    };
   } catch (error) {
     console.error(error.message);
     res.status(500);
