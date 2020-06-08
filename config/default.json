@@ -1,3 +1,4 @@
 {
-  "mongodbURI": "mongodb+srv://adamwjo:A3trumpet@sari-sari-db-nasxh.mongodb.net/test?retryWrites=true&w=majority"
+  "mongodbURI": "mongodb+srv://adamwjo:A3trumpet@sari-sari-db-nasxh.mongodb.net/test?retryWrites=true&w=majority",
+  "jwtSecret": "naruto"
 }
