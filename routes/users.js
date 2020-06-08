@@ -1,3 +1,4 @@
+const config = require('config');
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -50,10 +51,26 @@ router.post('/', newUserValidations, async (req, res) => {
     user.password = await bcrypt.hash(password, salt);
 
     await user.save();
+
     // -----> create payload and distribute token
     const payload = {
-      user: user.id,
+      user: {
+        id: user.id,
+      },
     };
+    jwt.sign(
+      payload,
+      config.get('jwtSecret'),
+      { expiresIn: 3600000 },
+      (error, token) => {
+        if (error) {
+          res
+            .status(401)
+            .json({ errors: [{ message: 'Token not authorized' }] });
+        }
+        res.json({ token });
+      }
+    );
   } catch (error) {
     console.error(error.message);
     res.status(500);
