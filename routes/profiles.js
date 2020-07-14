@@ -4,7 +4,7 @@ const auth = require('../middleware/auth');
 const { check, validationResult } = require('express-validator');
 
 //MODELS
-const user = require('../models/User');
+const User = require('../models/User');
 const Profile = require('../models/Profile');
 
 const profileValidations = [
@@ -67,6 +67,21 @@ router.get('/', async (req, res) => {
       'last_name',
     ]);
     res.json(allProfiles);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+///////////////////// DELETE USER PROFILE AND POSTS /////////////////////////////////////////
+router.delete('/', auth, async (req, res) => {
+  try {
+    //Find profile based on user id and remove
+    await Profile.findOneAndRemove({ user: req.user.id });
+    //Find user and remove
+    await User.findOneAndRemove({ _id: req.user.id });
+
+    res.json({ message: 'User and associated data successfuly deleted' });
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server Error');
