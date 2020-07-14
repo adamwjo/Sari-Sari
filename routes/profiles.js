@@ -12,12 +12,7 @@ const profileValidations = [
   check('bio', 'Please tell us a few words about your shop.').not().isEmpty(),
 ];
 
-// GET - TEST //////////////////////////////////////////////////////////////////////
-router.get('/', (req, res) => {
-  res.send('Profiles Route');
-});
-
-// POST - CREATE AND UPDATE PROFILE ///////////////////////////////////////////////
+/////////////////////////// CREATE AND UPDATE PROFILE ///////////////////////////////////////////////
 router.post('/', [auth, profileValidations], async (req, res) => {
   // Check the request for any errors.
   const errors = validationResult(req);
@@ -64,7 +59,42 @@ router.post('/', [auth, profileValidations], async (req, res) => {
   }
 });
 
-// GET - GET USERS PROFILE //////////////////////////////////////////////////////
+///////////////////// GET ALL PROFILES /////////////////////////////////////////
+router.get('/', async (req, res) => {
+  try {
+    const allProfiles = await Profile.find().populate('user', [
+      'first_name',
+      'last_name',
+    ]);
+    res.json(allProfiles);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+///////////////////////// GET PROFILE BY USER ID ///////////////////////////////////////
+router.get('/user/:user_id', async (req, res) => {
+  try {
+    const userProfile = await Profile.findOne({
+      user: req.params.user_id,
+    }).populate('user', ['first_name', 'last_name']);
+    if (!userProfile) {
+      return res.status(400).json({ message: 'Profile not found' });
+    }
+    res.json(userProfile);
+  } catch (error) {
+    console.error(error.message);
+
+    //check the error to distinguish between a user not found and server error
+    if (error.kind == 'ObjectId') {
+      return res.status(400).json({ message: 'Profile not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+///////////////////////// GET USERS PROFILE ///////////////////////////////////////
 router.get('/me', auth, async (req, res) => {
   try {
     // Find profile based on the user id and populate user info
