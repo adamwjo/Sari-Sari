@@ -12,6 +12,12 @@ const profileValidations = [
   check('bio', 'Please tell us a few words about your shop.').not().isEmpty(),
 ];
 
+const productValidations = [
+  check('name', 'Please enter a location').not().isEmpty(),
+  check('price', 'Please enter a price').not().isEmpty(),
+  check('quantity', 'Please enter a quantity').not().isEmpty(),
+];
+
 /////////////////////////// CREATE AND UPDATE PROFILE ///////////////////////////////////////////////
 router.post('/', [auth, profileValidations], async (req, res) => {
   // Check the request for any errors.
@@ -113,7 +119,7 @@ router.get('/user/:user_id', async (req, res) => {
 router.get('/me', auth, async (req, res) => {
   try {
     // Find profile based on the user id and populate user info
-    const userProfile = await await Profile.findOne({
+    const userProfile = await Profile.findOne({
       user: req.user.id,
     }).populate('user', ['first_name', 'last_name']);
 
@@ -125,6 +131,56 @@ router.get('/me', auth, async (req, res) => {
     }
 
     // If no errors present return the profile
+    res.json(userProfile);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+//@TODO UPDATE PROFILE PRODUCT /////////////////////////////////////////
+///////////////////////// ADD PROFILE PRODUCT ///////////////////////////////////////
+router.put('/product', [auth, productValidations], async (req, res) => {
+  // check validations for erros and return them if any are present
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  // Destructure data from request object
+  const { name, price, quantity, description } = req.body;
+  // Create new product object
+  const newProduct = {
+    name,
+    price,
+    quantity,
+    description,
+  };
+  try {
+    //find the profile for the logged in user and update
+    const profile = await Profile.findOne({ user: req.user.id });
+    profile.product.unshift(newProduct);
+    await profile.save();
+    res.json(profile);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).sendStatus('Server Error');
+  }
+});
+
+///////////////////// DELETE PROFILE PRODUC /////////////////////////////////////////
+router.delete('/product/:prod_id', auth, async (req, res) => {
+  try {
+    //Find profile based on user id
+    profile = await Profile.findOne({ user: req.user.id });
+
+    //Find the index of the product you wish to remove
+    const productIndex = profile.product
+      .map((product) => product.id)
+      .indexOf(req.params.prod_id);
+
+    //Remove the product and return the new profile
+    profile.experience.splice(productIndex, 1);
+    await profile.save();
     res.json(profile);
   } catch (error) {
     console.error(error.message);
