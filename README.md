@@ -6,6 +6,4 @@
   <li><strong>npm run devServer:</strong> starts express development server</li>
   <li><strong>npm run server:</strong> starts express server</li>
 
-  <h2>Using docker?</h2>
-  <p>docker-compose up --build</p>
 </ul>
