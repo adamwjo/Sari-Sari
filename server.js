@@ -4,6 +4,8 @@ const userRoutes = require('./routes/users');
 
 const app = express();
 
+//HEYHEY HEY TALKING WITH GULES 
+
 //Database Initialization
 connectDB();
 
