@@ -15,6 +15,7 @@ app.use('/api/v1/users', require('./routes/users'));
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/profile', require('./routes/profiles'));
 app.use('/api/v1/posts', require('./routes/posts'));
+app.use('/api/v1/customers', require('./routes/customers'));
 
 app.get('/', (req, res) => {
   res.send('Server Running');
