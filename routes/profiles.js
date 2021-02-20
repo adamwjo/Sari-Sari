@@ -66,7 +66,7 @@ router.post('/', [auth, profileValidations], async (req, res) => {
 });
 
 ///////////////////// GET ALL PROFILES /////////////////////////////////////////
-router.get('/', async (req, res) => {
+router.get('/',async (req, res) => {
   try {
     const allProfiles = await Profile.find().populate('user', [
       'first_name',
