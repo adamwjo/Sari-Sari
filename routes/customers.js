@@ -8,10 +8,12 @@ router.get('/', (req, res) => {
     res.send('Customers Route');
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const customer = new Customer({
     first_name: req.body.first_name
   })
+
+  await customer.save()
 })
   
   module.exports = router;
